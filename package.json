@@ -20,19 +20,20 @@
     "author": "Edwin Steiner",
     "license": "MIT",
     "dependencies": {
-        "@electron-forge/maker-base": "^7.5.0",
-        "@electron-forge/shared-types": "^7.5.0"
+        "@electron-forge/maker-base": "^8.0.1",
+        "@electron-forge/shared-types": "^8.0.1"
     },
     "files": [
         "dist",
         "src"
     ],
     "devDependencies": {
-        "@eslint/js": "^9.11.1",
-        "eslint": "^9.11.1",
-        "globals": "^15.9.0",
-        "rxjs": "^7.8.1",
-        "typescript": "^5.6.2",
-        "typescript-eslint": "^8.7.0"
+        "@eslint/js": "^9.39.5",
+        "@types/node": "^26.6.4",
+        "eslint": "^9.39.5",
+        "globals": "^15.15.0",
+        "rxjs": "^7.8.2",
+        "typescript": "^6.0.3",
+        "typescript-eslint": "^8.71.1"
     }
 }

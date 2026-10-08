@@ -3,9 +3,12 @@
         "module": "commonjs",
         "esModuleInterop": true,
         "target": "es6",
-        "moduleResolution": "node",
+        "moduleResolution": "bundler",
         "sourceMap": true,
-        "outDir": "dist"
+        "outDir": "dist",
+        "rootDir": "./src",
+        "types": ["node"],
+        "skipLibCheck": true
     },
     "lib": ["es2015"]
 }

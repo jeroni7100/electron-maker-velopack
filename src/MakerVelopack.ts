@@ -1,4 +1,4 @@
-import { MakerBase, MakerOptions } from '@electron-forge/maker-base';
+import Maker, { MakerOptions } from '@electron-forge/maker-base';
 import { ForgePlatform } from '@electron-forge/shared-types';
 import path from 'path';
 import fs from 'node:fs';
@@ -75,7 +75,7 @@ function assembleCommandLineForDisplay(program: string, args: string[]): string 
     return [program, ...maybe_quoted_args].join(" ");
 }
 
-export default class MakerVelopack extends MakerBase<MakerVelopackConfig> {
+export default class MakerVelopack extends Maker<MakerVelopackConfig> {
     name = 'velopack';
 
     defaultPlatforms: ForgePlatform[] = ['win32'];
@@ -138,11 +138,11 @@ to make changes in PATH effective.)
         }
 
         // we don't check forgeConfig.packagerConfig.appBundleId, as I think that is MacOS-specific
-        const pack_id = this.config.packId ?? convertNameToNupkgId(forgeConfig.packagerConfig.name) ?? convertNameToNupkgId(appName);
+        const pack_id = this.config.packId ?? convertNameToNupkgId(forgeConfig.packagerConfig.name ?? null) ?? convertNameToNupkgId(appName)!;
 
-        const version = this.config.packVersion ?? convertVersion(forgeConfig.packagerConfig.appVersion) ?? convertVersion(packageJSON.version as string);
-        const title = this.config.packTitle ?? forgeConfig.packagerConfig.name ?? packageJSON.productName ?? appName;
-        const icon = this.config.icon ?? forgeConfig.packagerConfig.icon;
+        const version = this.config.packVersion ?? convertVersion(forgeConfig.packagerConfig.appVersion ?? null) ?? convertVersion(packageJSON.version as string)!;
+        const title = this.config.packTitle ?? (typeof forgeConfig.packagerConfig.name === 'string' ? forgeConfig.packagerConfig.name : null) ?? packageJSON.productName ?? appName;
+        const icon = this.config.icon ?? (typeof forgeConfig.packagerConfig.icon === 'string' ? forgeConfig.packagerConfig.icon : undefined);
 
         let authors = this.config.packAuthors ?? packageJSON.authors ?? "";
         if (!authors && packageJSON.author) {
@@ -153,7 +153,7 @@ to make changes in PATH effective.)
 
         const vpk_program = this.getVpkProgram();
 
-        const vpk_args = ["pack",
+        const vpk_args: string[] = ["pack",
                           "--packId", pack_id,
                           "--packVersion", version,
                           "--packDir", dir,
@@ -229,7 +229,11 @@ to make changes in PATH effective.)
             execFileSync(vpk_program, vpk_args, { stdio: this.config.allowInteraction ? "inherit" : "pipe" });
         }
         catch (error) {
-            throw new Error(`Could not create velopack package.\nFailed command: ${vpk_command}\n\n${error.stdout}\n\n${error.stderr ?? error}\n`);
+            const err = error instanceof Error ? error : new Error(String(error));
+            const execError = err as NodeJS.ErrnoException & { stdout?: string; stderr?: string };
+            throw new Error(
+                `Could not create velopack package.\nFailed command: ${vpk_command}\n\n${execError.stdout ?? ""}\n\n${execError.stderr ?? err.message}\n`
+            );
         }
 
         const artifacts = [

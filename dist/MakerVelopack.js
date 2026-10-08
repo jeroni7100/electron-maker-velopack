@@ -13,7 +13,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 };
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.MakerVelopack = void 0;
-const maker_base_1 = require("@electron-forge/maker-base");
+const maker_base_1 = __importDefault(require("@electron-forge/maker-base"));
 const path_1 = __importDefault(require("path"));
 const node_fs_1 = __importDefault(require("node:fs"));
 const node_child_process_1 = require("node:child_process");
@@ -53,7 +53,7 @@ function assembleCommandLineForDisplay(program, args) {
     const maybe_quoted_args = args.map(arg => arg.match(/\s/) ? '"' + arg + '"' : arg);
     return [program, ...maybe_quoted_args].join(" ");
 }
-class MakerVelopack extends maker_base_1.MakerBase {
+class MakerVelopack extends maker_base_1.default {
     constructor() {
         super(...arguments);
         this.name = 'velopack';
@@ -93,7 +93,7 @@ to make changes in PATH effective.)
     }
     make(_a) {
         return __awaiter(this, arguments, void 0, function* ({ appName, dir, makeDir, targetPlatform, targetArch, packageJSON, forgeConfig }) {
-            var _b, _c, _d, _e, _f, _g, _h, _j, _k, _l, _m;
+            var _b, _c, _d, _e, _f, _g, _h, _j, _k, _l, _m, _o, _p, _q;
             this.checkVpkProgramAvailable();
             let outPath = this.config.outputDir;
             if (outPath == null) {
@@ -113,11 +113,11 @@ to make changes in PATH effective.)
                 throw new Error(`The executable file to package does not exist at the expected path: ${exe_path}.\n${error}`);
             }
             // we don't check forgeConfig.packagerConfig.appBundleId, as I think that is MacOS-specific
-            const pack_id = (_c = (_b = this.config.packId) !== null && _b !== void 0 ? _b : convertNameToNupkgId(forgeConfig.packagerConfig.name)) !== null && _c !== void 0 ? _c : convertNameToNupkgId(appName);
-            const version = (_e = (_d = this.config.packVersion) !== null && _d !== void 0 ? _d : convertVersion(forgeConfig.packagerConfig.appVersion)) !== null && _e !== void 0 ? _e : convertVersion(packageJSON.version);
-            const title = (_h = (_g = (_f = this.config.packTitle) !== null && _f !== void 0 ? _f : forgeConfig.packagerConfig.name) !== null && _g !== void 0 ? _g : packageJSON.productName) !== null && _h !== void 0 ? _h : appName;
-            const icon = (_j = this.config.icon) !== null && _j !== void 0 ? _j : forgeConfig.packagerConfig.icon;
-            let authors = (_l = (_k = this.config.packAuthors) !== null && _k !== void 0 ? _k : packageJSON.authors) !== null && _l !== void 0 ? _l : "";
+            const pack_id = (_d = (_b = this.config.packId) !== null && _b !== void 0 ? _b : convertNameToNupkgId((_c = forgeConfig.packagerConfig.name) !== null && _c !== void 0 ? _c : null)) !== null && _d !== void 0 ? _d : convertNameToNupkgId(appName);
+            const version = (_g = (_e = this.config.packVersion) !== null && _e !== void 0 ? _e : convertVersion((_f = forgeConfig.packagerConfig.appVersion) !== null && _f !== void 0 ? _f : null)) !== null && _g !== void 0 ? _g : convertVersion(packageJSON.version);
+            const title = (_k = (_j = (_h = this.config.packTitle) !== null && _h !== void 0 ? _h : (typeof forgeConfig.packagerConfig.name === 'string' ? forgeConfig.packagerConfig.name : null)) !== null && _j !== void 0 ? _j : packageJSON.productName) !== null && _k !== void 0 ? _k : appName;
+            const icon = (_l = this.config.icon) !== null && _l !== void 0 ? _l : (typeof forgeConfig.packagerConfig.icon === 'string' ? forgeConfig.packagerConfig.icon : undefined);
+            let authors = (_o = (_m = this.config.packAuthors) !== null && _m !== void 0 ? _m : packageJSON.authors) !== null && _o !== void 0 ? _o : "";
             if (!authors && packageJSON.author) {
                 authors = packageJSON.author;
                 if (typeof authors !== "string")
@@ -178,7 +178,9 @@ to make changes in PATH effective.)
                 (0, node_child_process_1.execFileSync)(vpk_program, vpk_args, { stdio: this.config.allowInteraction ? "inherit" : "pipe" });
             }
             catch (error) {
-                throw new Error(`Could not create velopack package.\nFailed command: ${vpk_command}\n\n${error.stdout}\n\n${(_m = error.stderr) !== null && _m !== void 0 ? _m : error}\n`);
+                const err = error instanceof Error ? error : new Error(String(error));
+                const execError = err;
+                throw new Error(`Could not create velopack package.\nFailed command: ${vpk_command}\n\n${(_p = execError.stdout) !== null && _p !== void 0 ? _p : ""}\n\n${(_q = execError.stderr) !== null && _q !== void 0 ? _q : err.message}\n`);
             }
             const artifacts = [
                 path_1.default.resolve(outPath, 'RELEASES'),
