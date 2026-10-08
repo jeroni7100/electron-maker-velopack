@@ -99,7 +99,7 @@ to make changes in PATH effective.)
             }
             const exe_extension = targetPlatform === "win32" ? ".exe" : "";
             const exe_name = `${forgeConfig.packagerConfig.executableName || appName}${exe_extension}`;
-            const exe_path = path.join(dir, exe_name);
+            const exe_path = path.join(dir, exe_name + (targetPlatform === "darwin" ? '.app' : ''));
             try {
                 yield fs.promises.access(exe_path);
             }
@@ -121,7 +121,7 @@ to make changes in PATH effective.)
             const vpk_args = ["pack",
                 "--packId", pack_id,
                 "--packVersion", version,
-                "--packDir", dir,
+                "--packDir", targetPlatform === "darwin" ? exe_path : dir,
                 "--mainExe", exe_name,
                 "--outputDir", outPath,
             ];
@@ -166,6 +166,7 @@ to make changes in PATH effective.)
             if (this.config.vpkExtraArguments)
                 vpk_args.push(...this.config.vpkExtraArguments);
             const vpk_command = assembleCommandLineForDisplay(vpk_program, vpk_args);
+            console.log(`Running command: ${vpk_command}`);
             try {
                 // If interaction is wanted, inherit stdio to allow interactive input/output of vpk.
                 // That is also why we have to use the ...Sync function here.
