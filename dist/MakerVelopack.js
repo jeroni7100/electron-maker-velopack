@@ -13,7 +13,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 };
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.MakerVelopack = void 0;
-const maker_base_1 = __importDefault(require("@electron-forge/maker-base"));
+const maker_base_1 = require("@electron-forge/maker-base");
 const path_1 = __importDefault(require("path"));
 const node_fs_1 = __importDefault(require("node:fs"));
 const node_child_process_1 = require("node:child_process");
@@ -53,7 +53,7 @@ function assembleCommandLineForDisplay(program, args) {
     const maybe_quoted_args = args.map(arg => arg.match(/\s/) ? '"' + arg + '"' : arg);
     return [program, ...maybe_quoted_args].join(" ");
 }
-class MakerVelopack extends maker_base_1.default {
+class MakerVelopack extends maker_base_1.MakerBase {
     constructor() {
         super(...arguments);
         this.name = 'velopack';
