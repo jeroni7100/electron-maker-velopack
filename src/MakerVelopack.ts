@@ -1,4 +1,4 @@
-import Maker, { MakerOptions } from '@electron-forge/maker-base';
+import { MakerBase, MakerOptions } from '@electron-forge/maker-base';
 import { ForgePlatform } from '@electron-forge/shared-types';
 import path from 'path';
 import fs from 'node:fs';
@@ -75,7 +75,7 @@ function assembleCommandLineForDisplay(program: string, args: string[]): string 
     return [program, ...maybe_quoted_args].join(" ");
 }
 
-export default class MakerVelopack extends Maker<MakerVelopackConfig> {
+export default class MakerVelopack extends MakerBase<MakerVelopackConfig> {
     name = 'velopack';
 
     defaultPlatforms: ForgePlatform[] = ['win32'];
