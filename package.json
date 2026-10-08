@@ -1,6 +1,8 @@
 {
     "name": "electron-maker-velopack",
     "version": "1.0.4",
+    "type": "module",
+    "exports": "./dist/MakerVelopack.js",
     "description": "Maker for @electron-forge that uses velopack to package an application.",
     "repository": "github:edwinst/electron-maker-velopack",
     "main": "dist/MakerVelopack.js",

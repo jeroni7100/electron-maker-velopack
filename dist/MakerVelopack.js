@@ -1,4 +1,3 @@
-"use strict";
 var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, generator) {
     function adopt(value) { return value instanceof P ? value : new P(function (resolve) { resolve(value); }); }
     return new (P || (P = Promise))(function (resolve, reject) {
@@ -8,15 +7,10 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
         step((generator = generator.apply(thisArg, _arguments || [])).next());
     });
 };
-var __importDefault = (this && this.__importDefault) || function (mod) {
-    return (mod && mod.__esModule) ? mod : { "default": mod };
-};
-Object.defineProperty(exports, "__esModule", { value: true });
-exports.MakerVelopack = void 0;
-const maker_base_1 = require("@electron-forge/maker-base");
-const path_1 = __importDefault(require("path"));
-const node_fs_1 = __importDefault(require("node:fs"));
-const node_child_process_1 = require("node:child_process");
+import { MakerBase } from '@electron-forge/maker-base';
+import path from 'path';
+import fs from 'node:fs';
+import { execFileSync } from 'node:child_process';
 const default_vpk_program = "vpk";
 // --- BEGIN code from electron-winstaller ----------------------
 // The following code (up to the END marker below) is from the
@@ -53,7 +47,7 @@ function assembleCommandLineForDisplay(program, args) {
     const maybe_quoted_args = args.map(arg => arg.match(/\s/) ? '"' + arg + '"' : arg);
     return [program, ...maybe_quoted_args].join(" ");
 }
-class MakerVelopack extends maker_base_1.MakerBase {
+export default class MakerVelopack extends MakerBase {
     constructor() {
         super(...arguments);
         this.name = 'velopack';
@@ -71,7 +65,7 @@ class MakerVelopack extends maker_base_1.MakerBase {
         const vpk_check_command = assembleCommandLineForDisplay(vpk_program, vpk_args);
         try {
             // we 'ignore' stdout to hide normal output; stderr remains visible to the user
-            (0, node_child_process_1.execFileSync)(vpk_program, vpk_args, { stdio: ['inherit', 'ignore', 'inherit'] });
+            execFileSync(vpk_program, vpk_args, { stdio: ['inherit', 'ignore', 'inherit'] });
         }
         catch (error) {
             console.error(error);
@@ -97,17 +91,17 @@ to make changes in PATH effective.)
             this.checkVpkProgramAvailable();
             let outPath = this.config.outputDir;
             if (outPath == null) {
-                outPath = path_1.default.resolve(makeDir, `velopack/${targetPlatform}/${targetArch}`);
+                outPath = path.resolve(makeDir, `velopack/${targetPlatform}/${targetArch}`);
                 yield this.ensureDirectory(outPath);
             }
             else {
-                outPath = path_1.default.resolve(outPath);
+                outPath = path.resolve(outPath);
             }
             const exe_extension = targetPlatform === "win32" ? ".exe" : "";
             const exe_name = `${forgeConfig.packagerConfig.executableName || appName}${exe_extension}`;
-            const exe_path = path_1.default.join(dir, exe_name);
+            const exe_path = path.join(dir, exe_name);
             try {
-                yield node_fs_1.default.promises.access(exe_path);
+                yield fs.promises.access(exe_path);
             }
             catch (error) {
                 throw new Error(`The executable file to package does not exist at the expected path: ${exe_path}.\n${error}`);
@@ -175,7 +169,7 @@ to make changes in PATH effective.)
             try {
                 // If interaction is wanted, inherit stdio to allow interactive input/output of vpk.
                 // That is also why we have to use the ...Sync function here.
-                (0, node_child_process_1.execFileSync)(vpk_program, vpk_args, { stdio: this.config.allowInteraction ? "inherit" : "pipe" });
+                execFileSync(vpk_program, vpk_args, { stdio: this.config.allowInteraction ? "inherit" : "pipe" });
             }
             catch (error) {
                 const err = error instanceof Error ? error : new Error(String(error));
@@ -183,7 +177,7 @@ to make changes in PATH effective.)
                 throw new Error(`Could not create velopack package.\nFailed command: ${vpk_command}\n\n${(_p = execError.stdout) !== null && _p !== void 0 ? _p : ""}\n\n${(_q = execError.stderr) !== null && _q !== void 0 ? _q : err.message}\n`);
             }
             const artifacts = [
-                path_1.default.resolve(outPath, 'RELEASES'),
+                path.resolve(outPath, 'RELEASES'),
             ];
             return artifacts;
         });
@@ -193,6 +187,5 @@ to make changes in PATH effective.)
         return (_a = this.config.vpkProgram) !== null && _a !== void 0 ? _a : default_vpk_program;
     }
 }
-exports.default = MakerVelopack;
-exports.MakerVelopack = MakerVelopack;
+export { MakerVelopack };
 //# sourceMappingURL=MakerVelopack.js.map
