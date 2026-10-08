@@ -1,6 +1,5 @@
-# Build outputs
-dist/
-*.tsbuildinfo
+# IDE / Editor
+.vscode/
 
 # Dependencies
 node_modules/
